@@ -23,12 +23,35 @@ jobs:
       - name: Set up Gf
         run:
           wget -O gf https://github.com/gogf/gf/releases/latest/download/gf_$(go env GOOS)_$(go env GOARCH) && chmod +x gf && ./gf install -y && rm ./gf
-          gf --version
 
       - name: Build
         run:
-          gf build -name video-file-handle -arch 386,amd64,arm -system linux,darwin,windows -path ./build
+          gf build -name video-file-handle -arch 386,amd64,arm -system linux,darwin,windows -path ./bin
 
-      - name: Show Build
-        run:
-          tree build
+      - name: Move Files Before Release
+        run: |
+          cd bin
+          for OS in *;do for FILE in $OS/*;\
+          do if [[ ${OS} =~ 'windows' ]];\
+          then mv $FILE video-file-handle_$OS.exe && rm -rf $OS;\
+          else mv $FILE video-file-handle_$OS && rm -rf $OS;\
+          fi;done;done
+
+      - name: Create Github Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: alexellis/upload-assets@0.2.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          asset_paths: '["bin/*"]'
