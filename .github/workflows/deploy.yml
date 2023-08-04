@@ -1,0 +1,34 @@
+name: Go CI
+
+on:
+  push:
+    tags:
+      - '*'
+
+env:
+  TZ: Asia/Shanghai
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.20
+
+      - name: Set up Gf
+        run:
+          wget -O gf https://github.com/gogf/gf/releases/latest/download/gf_$(go env GOOS)_$(go env GOARCH) && chmod +x gf && ./gf install -y && rm ./gf
+          gf --version
+
+      - name: Build
+        run:
+          gf build -name video-file-handle -arch 386,amd64,arm -system linux,darwin,windows -path ./build
+
+      - name: Show Build
+        run:
+          tree build
