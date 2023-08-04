@@ -43,9 +43,6 @@ func main() {
 			outputMonthPath := filepath.Join(outputYearPath, month)
 			outputVideoPath := filepath.Join(outputMonthPath, parentDirName)
 			outputFilePath := filepath.Join(outputVideoPath, info.Name())
-
-			fmt.Println("Moving from:", path)
-			fmt.Println("Moving to:", outputFilePath)
 			// 创建目录
 			err := os.MkdirAll(outputVideoPath, os.ModePerm)
 			if err != nil {
