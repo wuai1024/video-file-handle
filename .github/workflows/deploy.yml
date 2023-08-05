@@ -26,7 +26,7 @@ jobs:
 
       - name: Build
         run:
-          gf build -name video-file-handle -arch 386,amd64,arm -system linux,darwin,windows -path ./bin
+          gf build -name video-file-handle -arch all -system all -path ./bin
 
       - name: Move Files Before Release
         run: |
